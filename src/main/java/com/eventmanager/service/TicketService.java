@@ -20,7 +20,8 @@ public class TicketService {
 	@Autowired EventListRepository eventListRepository;
 	
 	public String bookTickets(EventMappingEntity eventMappingEntity) {
-
+                 Optional<LoginRecordEntity> audicheck = loginRepository.findByAudienceIdAudienceId(eventMappingEntity.getAudienceId());
+                 if(audicheck.isPresent()) {
 		      if(eventMappingEntity.getTicketsPurchased()<=0) {
 		    	  return "Please purchase atleast 1 ticket";
 		      }else {
@@ -38,7 +39,9 @@ public class TicketService {
 		    		  return "The event is not present";
 		    	  }
 		      }
-		
+                 }else {
+                	 return "The audience has not logged in";
+                 }
 	}
 	
 	public List<EventMappingEntity> eventlist(Integer audienceId){
