@@ -21,4 +21,6 @@ public interface LoginRepository extends JpaRepository<LoginRecordEntity,Integer
 	Optional<EventManagerEntity> findByeventManagerId(Integer id);
 	
 	Optional<LoginRecordEntity> findByAudienceIdAudienceId(Integer audienceId);
+	
+	Optional<LoginRecordEntity> findByEventManagerIdEventManagerId(Integer eventManagerId);
 }

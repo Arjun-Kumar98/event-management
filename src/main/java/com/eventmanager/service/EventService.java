@@ -28,16 +28,21 @@ public class EventService {
 		return eventRepository.save(eventEntity);
 	}
 	
-	public EventListEntity saveEventDetails(EventListEntity eventListEntity) {
+	public String saveEventDetails(EventListEntity eventListEntity) {
 		
 		
 	    Optional<EventManagerEntity> event = eventRepository.findById(eventListEntity.getEventManagerId());
+	    
 	    if(event.isPresent()) {
-
-				return eventListRepository.save(eventListEntity);
-	    	
+         Optional<LoginRecordEntity> eveCheck = loginRepository.findByEventManagerIdEventManagerId(eventListEntity.getEventManagerId());
+         if(eveCheck.isPresent()) {
+			 eventListRepository.save(eventListEntity);
+			 return "The event has been created successfully";
+         }else {
+        	 return "The event manager has not logged in";
+         }
 	}else {
-		throw new RuntimeException("Event manager is not present");
+		return "The event manager is not present";
 	}
 	}
 	

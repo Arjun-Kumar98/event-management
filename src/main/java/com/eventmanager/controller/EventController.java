@@ -33,11 +33,16 @@ public class EventController {
 	    }
 	  
 	  @PostMapping("/save")
-	  public ResponseEntity<EventListEntity> saveEventDetails(@RequestBody EventListEntity eventListEntity){
-		   logger.info("Attempting to {}", eventListEntity);
+	  public ResponseEntity<String> saveEventDetails(@RequestBody EventListEntity eventListEntity){
 
 		    // Save the EventListEntity and return the response
-		    return ResponseEntity.ok(eventService.saveEventDetails(eventListEntity));
+		  try {
+	String message = eventService.saveEventDetails(eventListEntity);
+	return ResponseEntity.ok(message);
+		  }
+		  catch(RuntimeException e) {
+			  return ResponseEntity.status(404).body("Creation failure");
+		  }
 	  }
 	    
 	    
