@@ -1,5 +1,7 @@
 package com.eventmanager.model;
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
+
 import java.util.*;
 import com.eventmanager.model.*;
 
@@ -13,14 +15,17 @@ public class EventManagerEntity {
 @Column(name="event_manager_id")
 private Integer eventManagerId;
 
+@NotNull(message = "Manager's name cannot be null")
 @Column(name="name", nullable=false)
 @JsonProperty("name")
 private String name;
 
+@NotNull(message = "user cannot be null")
 @Column(name="username",nullable=false)
 @JsonProperty("username")
 private String username;
 
+@NotNull(message = "password cannot be null")
 @Column(name="password",nullable=false)
 @JsonProperty("password")
 private String password;

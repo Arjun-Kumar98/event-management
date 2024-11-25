@@ -20,49 +20,49 @@ public class TicketService {
 	@Autowired EventListRepository eventListRepository;
 	
 	public String bookTickets(EventMappingEntity eventMappingEntity) {
-                 Optional<LoginRecordEntity> audicheck = loginRepository.findByAudienceIdAudienceId(eventMappingEntity.getAudienceId());
-                 if(audicheck.isPresent()) {
-		      if(eventMappingEntity.getTicketsPurchased()<=0) {
-		    	  return "Please purchase atleast 1 ticket";
-		      }else {
-		    	  Optional<EventListEntity> Optionalevent = eventListRepository.findById(eventMappingEntity.getEventId());
-		    	  if(Optionalevent.isPresent()) {
-		    		  EventListEntity event = Optionalevent.get();
-		    		  if(eventMappingEntity.getTicketsPurchased()>event.getTotalTickets()) {
-		    			  return "These many tickets are not available";
-		    		  }else {
-		    			  event.setTotalTickets(event.getTotalTickets()-eventMappingEntity.getTicketsPurchased());		
-		    			  ticketRepository.save(eventMappingEntity);
-		    			  return "The tickets have been booked successfully";
-		    			  }
-		    	  }else {
-		    		  return "The event is not present";
-		    	  }
-		      }
-                 }else {
-                	 return "The audience has not logged in";
-                 }
+		Optional<LoginRecordEntity> audicheck = loginRepository.findByAudienceIdAudienceId(eventMappingEntity.getAudienceId()); // to check if the audience has logged im
+		if (audicheck.isEmpty()) {
+			return "The audience has not logged in";
+		}
+		if (eventMappingEntity.getTicketsPurchased() <= 0) { //to check if the audience has purchased atleast one ticket
+			return "Please purchase atleast 1 ticket";
+		}
+
+		Optional<EventListEntity> Optionalevent = eventListRepository.findById(eventMappingEntity.getEventId()); // to check if the event is present
+		if (Optionalevent.isEmpty()) {
+			return "The event is not present";
+		}
+		EventListEntity event = Optionalevent.get();
+		if (eventMappingEntity.getTicketsPurchased() > event.getTotalTickets()) { // to check if the tickets are available
+			return "These many tickets are not available";
+		}
+		event.setTotalTickets(event.getTotalTickets() - eventMappingEntity.getTicketsPurchased());
+		ticketRepository.save(eventMappingEntity);
+		return "The tickets have been booked successfully";
 	}
-	
-	public List<EventMappingEntity> eventlist(Integer audienceId){
+		      
+               
+	public List<EventMappingEntity> eventlist(Integer audienceId){ // to view the ticket booking history of an audience
 		return ticketRepository.findByAudienceIdAudienceId(audienceId);
 	}
 	
-	public String cancelTickets(Integer eventId,Integer audienceId) {
-		Optional<EventMappingEntity> bookingEntity = ticketRepository.findByEventIdEventIdAndAudienceIdAudienceId(eventId, audienceId);
-		if(bookingEntity.isPresent()) {
-			EventMappingEntity cancelevent = bookingEntity.get();
-			
-			Optional<EventListEntity> Optionalevent = eventListRepository.findById(eventId);
+	public String cancelTickets(Integer eventId, Integer audienceId) {
+		Optional<EventMappingEntity> bookingEntity = ticketRepository
+				.findByEventIdEventIdAndAudienceIdAudienceId(eventId, audienceId); // to check if the audience has booked tickets for the event
 		
-				EventListEntity event = Optionalevent.get();
-				event.setTotalTickets(event.getTotalTickets()-cancelevent.getTicketsPurchased());
-				ticketRepository.delete(cancelevent);
-				return "Your tickets have been cancelled";
-			
-		}else {
+		if (bookingEntity.isPresent()) {
+			EventMappingEntity cancelevent = bookingEntity.get();
+
+			Optional<EventListEntity> Optionalevent = eventListRepository.findById(eventId);
+
+			EventListEntity event = Optionalevent.get();
+			event.setTotalTickets(event.getTotalTickets() + cancelevent.getTicketsPurchased());
+			ticketRepository.delete(cancelevent);
+			return "Your tickets have been cancelled";
+
+		} else {
 			return "You have not booked tickets for this event";
 		}
-		
+
 	}
 }

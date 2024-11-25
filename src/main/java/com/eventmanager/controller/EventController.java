@@ -22,85 +22,76 @@ import javax.persistence.*;
 public class EventController {
 	private static final Logger logger = LoggerFactory.getLogger(EventController.class);
 	@Autowired
-    private EventService eventService;
-	
+	private EventService eventService;
+
 	@Autowired
 	private EventRepository eventRepository;
-	
-	  @PostMapping("/manager")
-	    public ResponseEntity<EventManagerEntity> saveEventManagerDetails(@RequestBody EventManagerEntity eventManager) {
-	        return ResponseEntity.ok(eventService.saveEventManagerDetails(eventManager));
-	    }
-	  
-	  @PostMapping("/save")
-	  public ResponseEntity<String> saveEventDetails(@RequestBody EventListEntity eventListEntity){
 
-		    // Save the EventListEntity and return the response
-		  try {
-	String message = eventService.saveEventDetails(eventListEntity);
-	return ResponseEntity.ok(message);
-		  }
-		  catch(RuntimeException e) {
-			  return ResponseEntity.status(404).body("Creation failure");
-		  }
-	  }
-	    
-	    
-	    @GetMapping("/nameList")
-	    public ResponseEntity<String> eventManagerLogin(@RequestParam String username, @RequestParam String password) {
-	 	   logger.info("Attempting to log in with username: {} and password:{}", username,password);
-	        return ResponseEntity.ok(eventService.eventManagerLogin(username, password));
-	    }
-	    
-	    @PutMapping("/updateEventDetails")
-	    public ResponseEntity<EventListEntity> updateEventDetails(@RequestBody EventListEntity eventList) {
-	        try {
-	            return ResponseEntity.ok(eventService.updateEventDetails(eventList));
-	        } catch (RuntimeException e) {
-	            return ResponseEntity.badRequest().body(null); 
-	        }
-	    }
-	        @GetMapping("/viewEventList")
-	        public ResponseEntity<List<EventListEntity>> viewEventDetails() {
-	            return ResponseEntity.ok(eventService.viewEventDetails());
-	        }
-               
-	        
-	        
-	        @DeleteMapping("/deleteEvent/{id}")
-	        public ResponseEntity<String> deleteEventDetails(@PathVariable("id") Integer eventId) {
-        	try {
-	            eventService.deleteEventDetails(eventId);
-          return ResponseEntity.ok("Event deleted successfully");
-       }catch(RuntimeException e) {
-        	return ResponseEntity.status(404).body("Event is not present");
-	        }
-	        }
-	  
-	        @GetMapping("/range")
-	        public ResponseEntity<List<EventListEntity>> getEventDetailsBetweenRange(
-	                @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate, @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)LocalDate endDate) {
-	            return ResponseEntity.ok(eventService.getEventDetailsbetweenrange(startDate, endDate));
-	        }
+	@PostMapping("/manager")
+	public ResponseEntity<EventManagerEntity> saveEventManagerDetails(@RequestBody EventManagerEntity eventManager) {
+		return ResponseEntity.ok(eventService.saveEventManagerDetails(eventManager));
+	}
 
-	        @GetMapping("/search")
-	        public ResponseEntity<List<EventListEntity>> getEventDetailsByNameOrVenue(
-	                @RequestParam(required = false) String name, @RequestParam(required = false) String venue) {
-	            return ResponseEntity.ok(eventService.getEventDetailsByNameOrVenue(name, venue));
-	        }
+	@PostMapping("/save")
+	public ResponseEntity<String> createEvent(@RequestBody EventListEntity eventListEntity) {
+		try {
+			String message = eventService.createEvent(eventListEntity);
+			return ResponseEntity.ok(message);
+		} catch (RuntimeException e) {
+			return ResponseEntity.status(404).body("Creation failure");
+		}
+	}
 
-	        @GetMapping("/category")
-	        public ResponseEntity<List<EventListEntity>> getByEventCategory(@RequestParam String eventCategory) {
-	            return ResponseEntity.ok(eventService.getByEventCategeory(eventCategory));
-	        }
-	      
-	        @GetMapping("/viewmanagers")
-	        public ResponseEntity<List<EventManagerEntity>> getEventManagerList(){
-	        	return ResponseEntity.ok(eventService.geteventManagerdetails());
-	        }
-	        @GetMapping("/login")
-	        public ResponseEntity<String> getNameList(@RequestParam String username, @RequestParam String password){
-	        	return ResponseEntity.ok(eventService.eventManagerLogin(username,password));
-	        }
-	      
+	@GetMapping("/login")
+	public ResponseEntity<String> login(@RequestParam(required = true) String username, @RequestParam String password) {
+		return ResponseEntity.ok(eventService.eventManagerLogin(username, password));
+	}
+
+	@PutMapping("/update")
+	public ResponseEntity<EventListEntity> updateEventDetails(@RequestBody EventListEntity eventList) {
+		try {
+			return ResponseEntity.ok(eventService.updateEventDetails(eventList));
+		} catch (RuntimeException e) {
+			return ResponseEntity.badRequest().body(null);
+		}
+	}
+
+	@GetMapping("/list")
+	public ResponseEntity<List<EventListEntity>> viewEvents() {
+		return ResponseEntity.ok(eventService.viewEvents());
+	}
+
+	@DeleteMapping("/delete/{id}")
+	public ResponseEntity<String> deleteEventDetails(@PathVariable("id") Integer eventId) {
+		try {
+			eventService.deleteEventDetails(eventId);
+			return ResponseEntity.ok("Event deleted successfully");
+		} catch (RuntimeException e) {
+			return ResponseEntity.status(404).body("Event is not present");
+		}
+	}
+
+	@GetMapping("/range")
+	public ResponseEntity<List<EventListEntity>> getEventsBetweenRange(
+			@RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
+			@RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
+		return ResponseEntity.ok(eventService.getEventsbetweenrange(startDate, endDate));
+	}
+
+	@GetMapping("/search")
+	public ResponseEntity<List<EventListEntity>> getEventsByNameOrVenue(
+			@RequestParam(required = false) String name, @RequestParam(required = false) String venue) {
+		return ResponseEntity.ok(eventService.getEventsByNameOrVenue(name, venue));
+	}
+
+	@GetMapping("/category")
+	public ResponseEntity<List<EventListEntity>> getByEventCategory(@RequestParam String eventCategory) {
+		return ResponseEntity.ok(eventService.getByEventCategeory(eventCategory));
+	}
+
+	@GetMapping("/viewmanagers")
+	public ResponseEntity<List<EventManagerEntity>> getEventManagerList() {
+		return ResponseEntity.ok(eventService.geteventManagerdetails());
+	}
+
 }

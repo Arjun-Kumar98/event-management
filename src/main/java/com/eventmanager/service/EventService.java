@@ -1,6 +1,7 @@
 package com.eventmanager.service;
+
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service; 
+import org.springframework.stereotype.Service;
 import com.eventmanager.model.*;
 import com.eventmanager.repository.*;
 import java.util.*;
@@ -12,95 +13,90 @@ import java.time.LocalDate;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 @Service
 public class EventService {
 	private static final Logger logger = LoggerFactory.getLogger(EventService.class);
 
 	@Autowired
 	private EventRepository eventRepository;
-	
+
 	@Autowired
 	private EventListRepository eventListRepository;
-	
+
 	@Autowired
 	private LoginRepository loginRepository;
+
+	private <T> T fetchEntityById(Optional<T> optionalEntity, String entityName) {
+		return optionalEntity.orElseThrow(() -> new EntityNotFoundException(entityName + "not found"));
+	}
+
+	private void checkLogin(Integer eventManagerId) {
+		if (!loginRepository.findByEventManagerIdEventManagerId(eventManagerId).isPresent()) {
+			throw new RuntimeException("Event manager has not logged in");
+		}
+	}
+
 	public EventManagerEntity saveEventManagerDetails(EventManagerEntity eventEntity) {
 		return eventRepository.save(eventEntity);
 	}
-	
-	public String saveEventDetails(EventListEntity eventListEntity) {
-		
-		
-	    Optional<EventManagerEntity> event = eventRepository.findById(eventListEntity.getEventManagerId());
-	    
-	    if(event.isPresent()) {
-         Optional<LoginRecordEntity> eveCheck = loginRepository.findByEventManagerIdEventManagerId(eventListEntity.getEventManagerId());
-         if(eveCheck.isPresent()) {
-			 eventListRepository.save(eventListEntity);
-			 return "The event has been created successfully";
-         }else {
-        	 return "The event manager has not logged in";
-         }
-	}else {
-		return "The event manager is not present";
+
+	public String createEvent(EventListEntity eventListEntity) {
+
+		Optional<EventManagerEntity> eventManager = eventRepository.findById(eventListEntity.getEventManagerId());
+		checkLogin(eventListEntity.getEventManagerId());
+
+		eventListRepository.save(eventListEntity);
+		return "The event has been created successfully";
+
 	}
-	}
-	
+
 	public EventListEntity updateEventDetails(EventListEntity eventListEntity) {
-		Optional<EventListEntity> eventId = eventListRepository.findById(eventListEntity.getEventId());
-		if(eventId.isPresent()) {
-			EventListEntity existingEvent = eventId.get();
-			existingEvent.setVenue(eventListEntity.getVenue());
-			existingEvent.setEventTime(eventListEntity.getEventTime());
-			existingEvent.setTotalTickets(eventListEntity.getTotalTickets());
-	     return eventListRepository.save(eventListEntity);
-		}else {
-			throw new RuntimeException("Event Id is not present");
-		}
-			
-			
-		}
-	
-	public List<EventListEntity> viewEventDetails(){
+		EventListEntity existingEvent = fetchEntityById(eventListRepository.findById(eventListEntity.getEventId()),"Event");
+		existingEvent.setVenue(eventListEntity.getVenue());
+		existingEvent.setEventTime(eventListEntity.getEventTime());
+		existingEvent.setTotalTickets(eventListEntity.getTotalTickets());
+		return eventListRepository.save(eventListEntity);
+	}
+
+	public List<EventListEntity> viewEvents() {
 		return eventListRepository.findAll();
 	}
+
 	public void deleteEventDetails(Integer eventId) {
-		if(eventRepository.existsById(eventId)) {
-	  eventListRepository.deleteById(eventId);
-		}else {
+		if (eventRepository.existsById(eventId)) {
+			eventListRepository.deleteById(eventId);
+		} else {
 			throw new RuntimeException("Event is not present");
 		}
 	}
-	
-	public List<EventListEntity> getEventDetailsbetweenrange(LocalDate startdate,LocalDate enddate){
-	    Date startDate = java.sql.Date.valueOf(startdate); // Convert LocalDate to java.util.Date
-        Date endDate = java.sql.Date.valueOf(enddate);
-		return eventListRepository.findByEventTimeBetween(startDate,endDate);
+
+	public List<EventListEntity> getEventsbetweenrange(LocalDate startdate, LocalDate enddate) {
+		Date startDate = java.sql.Date.valueOf(startdate); // Convert LocalDate to java.util.Date
+		Date endDate = java.sql.Date.valueOf(enddate);
+		return eventListRepository.findByEventTimeBetween(startDate, endDate);
 	}
-	public List<EventManagerEntity> geteventManagerdetails(){
+
+	public List<EventManagerEntity> geteventManagerdetails() {
 		return eventRepository.findAll();
 	}
-	
-	public List<EventListEntity> getEventDetailsByNameOrVenue(String Name,String venue){
-		return eventListRepository.findByEventNameContainingIgnoreCaseOrVenueContainingIgnoreCase(Name,venue);
+
+	public List<EventListEntity> getEventsByNameOrVenue(String Name, String venue) {
+		return eventListRepository.findByEventNameContainingIgnoreCaseOrVenueContainingIgnoreCase(Name, venue);
 	}
-	
-	public List<EventListEntity> getByEventCategeory(String eventCategory){
+
+	public List<EventListEntity> getByEventCategeory(String eventCategory) {
 		return eventListRepository.findByeventCategory(eventCategory);
 	}
 
-	public String eventManagerLogin(String username,String password){
-		Optional<EventManagerEntity> nameList = eventRepository.findByUsernameAndPassword(username,password);
-	  if(nameList.isPresent()) {
-		  //return "Happy to login";
-		  EventManagerEntity eventEntity = nameList.get();
-		  LoginRecordEntity loginEntity = new LoginRecordEntity();
-		  loginEntity.setEventManagerId(eventEntity.getEventManagerId());
-		  loginRepository.save(loginEntity);
-		  return "The user has successfully logged in";
-		  
-	  }else {
-		  return "please enter the correct username and password";
-	  }
+	public String eventManagerLogin(String username, String password) {
+
+		EventManagerEntity eventManager = fetchEntityById(eventRepository.findByUsernameAndPassword(username, password),
+				"Event manager");
+		LoginRecordEntity loginEntity = new LoginRecordEntity();
+		loginEntity.setEventManagerId(eventManager.getEventManagerId());
+		loginRepository.save(loginEntity);
+		return "The user has successfully logged in";
+
 	}
 }

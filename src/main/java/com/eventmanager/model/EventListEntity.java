@@ -39,7 +39,7 @@ public class EventListEntity {
     private Integer totalTickets;
 
     @ManyToOne
-    @JoinColumn(name = "eventmanager_id", nullable = true) 
+    @JoinColumn(name = "eventmanager_id", nullable = false) 
     private EventManagerEntity eventManagerId;
 
     public Integer getEventManagerId() {

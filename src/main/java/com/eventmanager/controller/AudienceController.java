@@ -6,10 +6,13 @@ import org.springframework.web.bind.annotation.*;
 
 import com.eventmanager.model.AudienceEntity;
 import com.eventmanager.service.AudienceService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 @RestController
 @RequestMapping("/audience")
 
 public class AudienceController {
+	private static final Logger logger = LoggerFactory.getLogger(AudienceController.class);
 
 	
 
