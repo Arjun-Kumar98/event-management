@@ -16,15 +16,20 @@ private AudienceRepository audienceRepository;
 private LoginRepository loginRepository;
 
 @Autowired
+private PasswordService passwordService;
+
+@Autowired
 private EventRepository eventRepository;
 
 public AudienceEntity save(AudienceEntity audienceEntity) {
+	String hashedPassword = passwordService.hashPassword(audienceEntity.getPassword());
+	audienceEntity.setPassword(hashedPassword);
 	return audienceRepository.save(audienceEntity);
 }
 public String audienceLogin(String userName,String password) {
-	Optional<AudienceEntity> audienceOptionalEntity = audienceRepository.findByUsernameAndPassword(userName,password);
-		if(audienceOptionalEntity.isPresent()) {
-			AudienceEntity audienceEntity = audienceOptionalEntity.get();
+	Optional<AudienceEntity> optaudience = audienceRepository.findByUsername(userName);
+		if(optaudience.isPresent() && passwordService.verifyPassword(password, optaudience.get().getPassword())) {
+			AudienceEntity audienceEntity = optaudience.get();
 			LoginRecordEntity loginEntity = new LoginRecordEntity();
 			loginEntity.setAudienceId(audienceEntity.getAudienceId());
 			loginRepository.save(loginEntity);

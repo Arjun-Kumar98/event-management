@@ -10,7 +10,7 @@ import com.eventmanager.model.*;
 public interface EventRepository extends JpaRepository<EventManagerEntity,Integer> {
 	//List<EventManagerEntity> findByUsernameAndPassword(String username,String password);
 	
-	Optional<EventManagerEntity> findByUsernameAndPassword(String username,String password);
+	Optional<EventManagerEntity> findByUsername(String username);
 	
 
 }

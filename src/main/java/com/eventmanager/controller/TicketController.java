@@ -7,6 +7,10 @@ import org.springframework.web.bind.annotation.*;
 
 import com.eventmanager.model.*;
 import java.util.*;
+import javax.validation.Valid;
+
+import javax.validation.constraints.NotBlank;
+
 
 import com.eventmanager.service.TicketService;
 @RestController
@@ -17,7 +21,7 @@ public class TicketController {
     private TicketService ticketService;
     
     @PostMapping("/book")
-    public ResponseEntity<String> bookTickets(@RequestBody EventMappingEntity eventMappingEntity) {
+    public ResponseEntity<String> bookTickets(@Valid @RequestBody EventMappingEntity eventMappingEntity) {
         String response = ticketService.bookTickets(eventMappingEntity);
         
         return ResponseEntity.ok(response);
@@ -30,7 +34,7 @@ public class TicketController {
     }
     
     @GetMapping("/bookingList")
-    public ResponseEntity<List<EventMappingEntity>> viewTickets(@RequestParam Integer audienceId){
+    public ResponseEntity<List<EventMappingEntity>> viewTickets(@RequestParam @NotBlank(message="audience Id cannot be blank") Integer audienceId){
     	List<EventMappingEntity> ticketList = ticketService.eventlist(audienceId);
     	return ResponseEntity.ok(ticketList);
     }

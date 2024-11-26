@@ -1,10 +1,13 @@
 package com.eventmanager.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import com.eventmanager.model.*;
 import com.eventmanager.repository.*;
+import com.eventmanager.exception.*;
 import java.util.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import javax.persistence.EntityNotFoundException;
 
@@ -23,6 +26,9 @@ public class EventService {
 
 	@Autowired
 	private EventListRepository eventListRepository;
+	
+	@Autowired
+	private PasswordService passwordService;
 
 	@Autowired
 	private LoginRepository loginRepository;
@@ -33,11 +39,13 @@ public class EventService {
 
 	private void checkLogin(Integer eventManagerId) {
 		if (!loginRepository.findByEventManagerIdEventManagerId(eventManagerId).isPresent()) {
-			throw new RuntimeException("Event manager has not logged in");
+			 throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Event manager has not logged in");
 		}
 	}
 
 	public EventManagerEntity saveEventManagerDetails(EventManagerEntity eventEntity) {
+		String hashedPassword = passwordService.hashPassword(eventEntity.getPassword());
+		eventEntity.setPassword(hashedPassword);
 		return eventRepository.save(eventEntity);
 	}
 
@@ -67,7 +75,7 @@ public class EventService {
 		if (eventRepository.existsById(eventId)) {
 			eventListRepository.deleteById(eventId);
 		} else {
-			throw new RuntimeException("Event is not present");
+			 throw new EventNotFoundException("Event with ID " + eventId + " is not present");
 		}
 	}
 
@@ -85,18 +93,21 @@ public class EventService {
 		return eventListRepository.findByEventNameContainingIgnoreCaseOrVenueContainingIgnoreCase(Name, venue);
 	}
 
-	public List<EventListEntity> getByEventCategeory(String eventCategory) {
+	public List<EventListEntity> getByEventCategory(String eventCategory) {
 		return eventListRepository.findByeventCategory(eventCategory);
 	}
 
 	public String eventManagerLogin(String username, String password) {
 
-		EventManagerEntity eventManager = fetchEntityById(eventRepository.findByUsernameAndPassword(username, password),
-				"Event manager");
-		LoginRecordEntity loginEntity = new LoginRecordEntity();
+		Optional<EventManagerEntity> manager = eventRepository.findByUsername(username);
+		if(manager.isPresent() && passwordService.verifyPassword(password, manager.get().getPassword())) {
+		EventManagerEntity eventManager = manager.get();
+			LoginRecordEntity loginEntity = new LoginRecordEntity();
 		loginEntity.setEventManagerId(eventManager.getEventManagerId());
 		loginRepository.save(loginEntity);
 		return "The user has successfully logged in";
-
+		}else {
+			return "incorrect username or password";
+		}
 	}
 }

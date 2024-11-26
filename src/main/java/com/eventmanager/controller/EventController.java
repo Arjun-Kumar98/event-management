@@ -16,6 +16,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import javax.persistence.*;
 import javax.validation.Valid;
+import javax.validation.constraints.NotBlank;
 
 @RestController
 @RequestMapping("/events")
@@ -34,7 +35,7 @@ public class EventController {
 	}
 
 	@PostMapping("/save")
-	public ResponseEntity<String> createEvent(@RequestBody EventListEntity eventListEntity) {
+	public ResponseEntity<String> createEvent(@Valid @RequestBody EventListEntity eventListEntity) {
 		try {
 			String message = eventService.createEvent(eventListEntity);
 			return ResponseEntity.ok(message);
@@ -49,7 +50,7 @@ public class EventController {
 	}
 
 	@PutMapping("/update")
-	public ResponseEntity<EventListEntity> updateEventDetails(@RequestBody EventListEntity eventList) {
+	public ResponseEntity<EventListEntity> updateEventDetails(@Valid @RequestBody EventListEntity eventList) {
 		try {
 			return ResponseEntity.ok(eventService.updateEventDetails(eventList));
 		} catch (RuntimeException e) {
@@ -86,8 +87,8 @@ public class EventController {
 	}
 
 	@GetMapping("/category")
-	public ResponseEntity<List<EventListEntity>> getByEventCategory(@RequestParam String eventCategory) {
-		return ResponseEntity.ok(eventService.getByEventCategeory(eventCategory));
+	public ResponseEntity<List<EventListEntity>> getByEventCategory(@RequestParam @NotBlank(message="event category cannot be blank") String eventCategory) {
+		return ResponseEntity.ok(eventService.getByEventCategory(eventCategory));
 	}
 
 	@GetMapping("/viewmanagers")

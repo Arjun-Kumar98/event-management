@@ -1,12 +1,14 @@
 package com.eventmanager.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service; 
 import com.eventmanager.model.*;
 import com.eventmanager.repository.*;
 import java.util.*;
 import java.sql.Timestamp;
 import java.time.LocalDate;
+import org.springframework.web.server.ResponseStatusException;
 
 @Service
 public class TicketService {
@@ -22,7 +24,7 @@ public class TicketService {
 	public String bookTickets(EventMappingEntity eventMappingEntity) {
 		Optional<LoginRecordEntity> audicheck = loginRepository.findByAudienceIdAudienceId(eventMappingEntity.getAudienceId()); // to check if the audience has logged im
 		if (audicheck.isEmpty()) {
-			return "The audience has not logged in";
+			 throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Audience has not logged in");
 		}
 		if (eventMappingEntity.getTicketsPurchased() <= 0) { //to check if the audience has purchased atleast one ticket
 			return "Please purchase atleast 1 ticket";

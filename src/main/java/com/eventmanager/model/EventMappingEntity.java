@@ -1,5 +1,6 @@
 package com.eventmanager.model;
 import javax.persistence.*;
+import javax.validation.constraints.*;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 @Entity
@@ -12,14 +13,18 @@ public class EventMappingEntity {
 
 	    // Many-to-one relationship with EventEntity
 	    @ManyToOne
-	    @JoinColumn(name = "event_id", nullable = true)
+	    @NotNull(message ="Event Id cannot be null")
+	    @JoinColumn(name = "event_id", nullable = false)
 	    private EventListEntity eventId;
 
 	    // Many-to-one relationship with AudienceEntity
 	    @ManyToOne
-	    @JoinColumn(name = "audience_id", nullable = true)
+	    @NotNull(message ="Audience Id  cannot be null")
+	    @JoinColumn(name = "audience_id", nullable = false)
 	    private AudienceEntity audienceId;
-
+        
+	    @NotNull(message ="Total tickets cannot be null")
+	    @Min(value = 1, message = "Total tickets must be at least 1")
 	    @Column(name = "tickets_purchased")
 	    @JsonProperty("ticketsPurchased")
 	    private Integer ticketsPurchased;

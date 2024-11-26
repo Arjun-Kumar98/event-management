@@ -8,6 +8,12 @@ import com.eventmanager.model.AudienceEntity;
 import com.eventmanager.service.AudienceService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import javax.validation.*;
+import org.springframework.validation.annotation.Validated;
+import javax.validation.constraints.NotBlank;
+
+
+
 @RestController
 @RequestMapping("/audience")
 
@@ -26,9 +32,10 @@ public class AudienceController {
         return ResponseEntity.ok(savedAudience);
     }
     
+    @Validated
     @GetMapping("/login")
-    public ResponseEntity<String> audienceLogin(@RequestParam("username") String username, 
-                                                @RequestParam("password") String password) {
+    public ResponseEntity<String> audienceLogin(@RequestParam("username") @NotBlank(message="username cannot be blank") String username, 
+                                                @RequestParam("password") @NotBlank(message="password cannot be blank") String password) {
         String response = audienceService.audienceLogin(username, password);
         return ResponseEntity.ok(response);
     }

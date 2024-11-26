@@ -23,6 +23,9 @@ public class EventServiceTest {
 
     @Mock
     private EventListRepository eventListRepository;
+    
+    @Mock
+    private PasswordService passwordService;
 
     @Mock
     private LoginRepository loginRepository;
@@ -38,16 +41,25 @@ public class EventServiceTest {
         EventManagerEntity eventManager = new EventManagerEntity();
         eventManager.setUsername("manager1");
         eventManager.setPassword("password");
-
+        String hashedPassword = "$2a$10$eImiTXuWVxfM37uY4JANj.QWxrJh4i68eJbO.Zr6US6C2.TD5Q6/u";
+        when(passwordService.hashPassword("password")).thenReturn(hashedPassword);
         when(eventRepository.save(any(EventManagerEntity.class))).thenReturn(eventManager);
 
        
-        EventManagerEntity savedManager = eventService.saveEventManagerDetails(eventManager);
+        EventManagerEntity savedManager = new EventManagerEntity();
+        savedManager.setUsername("manager1");
+        savedManager.setPassword(hashedPassword);
+        when(eventRepository.save(any(EventManagerEntity.class))).thenReturn(savedManager);
+
+     
+        EventManagerEntity result = eventService.saveEventManagerDetails(eventManager);
 
    
-        assertNotNull(savedManager);
-        assertEquals("manager1", savedManager.getUsername());
-        verify(eventRepository, times(1)).save(eventManager);
+        assertNotNull(result);
+        assertEquals("manager1", result.getUsername());
+        assertEquals(hashedPassword,result.getPassword());
+        verify(passwordService,times(1)).hashPassword("password");
+        verify(eventRepository, times(1)).save(any(EventManagerEntity.class));
     }
 
     @Test

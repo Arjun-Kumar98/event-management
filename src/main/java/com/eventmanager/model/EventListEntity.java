@@ -1,5 +1,6 @@
 package com.eventmanager.model;
 import javax.persistence.*;
+import javax.validation.constraints.*;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -18,22 +19,28 @@ public class EventListEntity {
     @Column(name = "event_id")
     private Integer eventId;
 
+    @NotNull(message="event category cannot be null")
     @Column(name = "event_category")
     @JsonProperty("eventCategory")
     private String eventCategory;
 
+    @NotNull(message="event time cannot be null")
     @Column(name = "event_time")
     @JsonProperty("eventTime")
     private Timestamp eventTime;
 
+    @NotNull(message="event name cannot be null")
     @Column(name = "event_name")
     @JsonProperty("eventName")
     private String eventName;
     
+    @NotNull(message=" venue cannot be null")
     @Column(name = "venue")
     @JsonProperty("venue")
     private String venue;
 
+    @NotNull(message="total tickets cannot be null")
+    @Min(value = 1, message = "Total tickets must be at least 1")
     @Column(name = "total_tickets")
     @JsonProperty("totalTickets")
     private Integer totalTickets;

@@ -7,5 +7,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import java.util.Optional;
 public interface AudienceRepository extends JpaRepository<AudienceEntity,Integer> {
-	Optional<AudienceEntity> findByUsernameAndPassword(String userName,String password);
+	Optional<AudienceEntity> findByUsername(String userName);
 }
