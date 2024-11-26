@@ -15,6 +15,7 @@ import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import javax.persistence.*;
+import javax.validation.Valid;
 
 @RestController
 @RequestMapping("/events")
@@ -28,7 +29,7 @@ public class EventController {
 	private EventRepository eventRepository;
 
 	@PostMapping("/manager")
-	public ResponseEntity<EventManagerEntity> saveEventManagerDetails(@RequestBody EventManagerEntity eventManager) {
+	public ResponseEntity<EventManagerEntity> saveEventManagerDetails(@Valid @RequestBody EventManagerEntity eventManager) {
 		return ResponseEntity.ok(eventService.saveEventManagerDetails(eventManager));
 	}
 
