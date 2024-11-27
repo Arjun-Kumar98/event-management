@@ -43,13 +43,13 @@ public class EventService {
 		}
 	}
 
-	public EventManagerEntity saveEventManagerDetails(EventManagerEntity eventEntity) {
+	public EventManagerEntity saveEventManagerDetails(EventManagerEntity eventEntity) { //for saving manager details
 		String hashedPassword = passwordService.hashPassword(eventEntity.getPassword());
 		eventEntity.setPassword(hashedPassword);
 		return eventRepository.save(eventEntity);
 	}
 
-	public String createEvent(EventListEntity eventListEntity) {
+	public String createEvent(EventListEntity eventListEntity) { //for creating an event
 
 		Optional<EventManagerEntity> eventManager = eventRepository.findById(eventListEntity.getEventManagerId());
 		checkLogin(eventListEntity.getEventManagerId());
@@ -59,7 +59,7 @@ public class EventService {
 
 	}
 
-	public EventListEntity updateEventDetails(EventListEntity eventListEntity) {
+	public EventListEntity updateEventDetails(EventListEntity eventListEntity) { //for updating an event
 		EventListEntity existingEvent = fetchEntityById(eventListRepository.findById(eventListEntity.getEventId()),"Event");
 		existingEvent.setVenue(eventListEntity.getVenue());
 		existingEvent.setEventTime(eventListEntity.getEventTime());
@@ -71,7 +71,7 @@ public class EventService {
 		return eventListRepository.findAll();
 	}
 
-	public void deleteEventDetails(Integer eventId) {
+	public void deleteEventDetails(Integer eventId) { // for deleting an event
 		if (eventRepository.existsById(eventId)) {
 			eventListRepository.deleteById(eventId);
 		} else {
@@ -79,25 +79,25 @@ public class EventService {
 		}
 	}
 
-	public List<EventListEntity> getEventsbetweenrange(LocalDate startdate, LocalDate enddate) {
+	public List<EventListEntity> getEventsbetweenrange(LocalDate startdate, LocalDate enddate) { //for listing events between a date range
 		Date startDate = java.sql.Date.valueOf(startdate); // Convert LocalDate to java.util.Date
 		Date endDate = java.sql.Date.valueOf(enddate);
 		return eventListRepository.findByEventTimeBetween(startDate, endDate);
 	}
 
-	public List<EventManagerEntity> geteventManagerdetails() {
+	public List<EventManagerEntity> geteventManagerdetails() {// for viewing all the event managers
 		return eventRepository.findAll();
 	}
 
-	public List<EventListEntity> getEventsByNameOrVenue(String Name, String venue) {
+	public List<EventListEntity> getEventsByNameOrVenue(String Name, String venue) { // for filtering events based on name or venue
 		return eventListRepository.findByEventNameContainingIgnoreCaseOrVenueContainingIgnoreCase(Name, venue);
 	}
 
-	public List<EventListEntity> getByEventCategory(String eventCategory) {
+	public List<EventListEntity> getByEventCategory(String eventCategory) { // for filtering events based on the category
 		return eventListRepository.findByeventCategory(eventCategory);
 	}
 
-	public String eventManagerLogin(String username, String password) {
+	public String eventManagerLogin(String username, String password) { //for an event manager login
 
 		Optional<EventManagerEntity> manager = eventRepository.findByUsername(username);
 		if(manager.isPresent() && passwordService.verifyPassword(password, manager.get().getPassword())) {
