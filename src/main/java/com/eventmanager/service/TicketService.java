@@ -26,10 +26,6 @@ public class TicketService {
 		if (audicheck.isEmpty()) {
 			 throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Audience has not logged in");
 		}
-		if (eventMappingEntity.getTicketsPurchased() <= 0) { //to check if the audience has purchased atleast one ticket
-			return "Please purchase atleast 1 ticket";
-		}
-
 		Optional<EventListEntity> Optionalevent = eventListRepository.findById(eventMappingEntity.getEventId()); // to check if the event is present
 		if (Optionalevent.isEmpty()) {
 			return "The event is not present";
