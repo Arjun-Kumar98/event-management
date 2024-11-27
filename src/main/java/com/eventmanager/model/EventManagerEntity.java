@@ -20,7 +20,7 @@ private Integer eventManagerId;
 @JsonProperty("name")
 private String name;
 
-@NotNull(message ="user cannot be null")
+@NotNull(message ="username cannot be null")
 @Column(name="username",nullable=false)
 @JsonProperty("username")
 private String username;
