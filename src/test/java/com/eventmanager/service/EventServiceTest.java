@@ -41,7 +41,7 @@ public class EventServiceTest {
         EventManagerEntity eventManager = new EventManagerEntity();
         eventManager.setUsername("manager1");
         eventManager.setPassword("password");
-        String hashedPassword = "$2a$10$eImiTXuWVxfM37uY4JANj.QWxrJh4i68eJbO.Zr6US6C2.TD5Q6/u";
+        String hashedPassword = "$2a$10$eImiTXuWVxfM37uY4JANj.QWxrJh4i68eJbO.Zr6US6C2.TD1Z6/u";
         when(passwordService.hashPassword("password")).thenReturn(hashedPassword);
         when(eventRepository.save(any(EventManagerEntity.class))).thenReturn(eventManager);
 
